@@ -1,67 +1,245 @@
-
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سلوت عشوائي - Stake</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-.container { padding: 1.5rem 1rem; max-width: 680px; font-family: var(--font-sans); }
-.header { text-align: center; margin-bottom: 1.5rem; }
-.header h2 { font-size: 20px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
-.header p { font-size: 13px; color: var(--color-text-secondary); }
-.stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
-.stat-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px; }
-.stat-label { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 2px; }
-.stat-val { font-size: 17px; font-weight: 500; color: var(--color-text-primary); }
-.spin-btn { display: block; width: 100%; padding: 14px; font-size: 17px; font-weight: 500; cursor: pointer; border-radius: var(--border-radius-lg); border: 2px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); transition: background 0.15s, transform 0.1s; margin-bottom: 1.5rem; }
-.spin-btn:hover { background: var(--color-background-secondary); }
-.spin-btn:active { transform: scale(0.98); }
-.spin-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.result-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.5rem 1.25rem; margin-bottom: 1rem; display: none; text-align: center; }
-.result-card.show { display: block; }
-.result-label { font-size: 12px; color: var(--color-text-tertiary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
-.result-name { font-size: 28px; font-weight: 500; color: var(--color-text-primary); }
-.session-note { margin-top: 10px; font-size: 12px; color: var(--color-text-tertiary); }
-.recent-list { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
-.recent-title { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 10px; font-weight: 500; }
-.recent-item { padding: 7px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 13px; color: var(--color-text-primary); }
-.recent-item:last-child { border-bottom: none; }
-.refresh-note { text-align: center; font-size: 11px; color: var(--color-text-tertiary); margin-top: 1rem; }
-.spinning { animation: pulse 0.4s infinite alternate; }
-@keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #f5c842;
+    --gold-dark: #c9a020;
+    --bg: #0d0d0d;
+    --card: #161616;
+    --card2: #1e1e1e;
+    --border: #2a2a2a;
+    --text: #f0f0f0;
+    --muted: #888;
+    --green: #00c853;
+    --red: #ff4444;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 40px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .header .logo {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .header h1 {
+    font-size: 30px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.1;
+  }
+  .header .subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* Stats */
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+    max-width: 480px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    text-align: center;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .stat-val {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--gold);
+  }
+
+  /* Spin Button */
+  .spin-btn {
+    display: block;
+    width: 100%;
+    max-width: 480px;
+    padding: 18px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 16px;
+    border: none;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: #0d0d0d;
+    margin-bottom: 20px;
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+    box-shadow: 0 4px 20px rgba(245,200,66,0.3);
+  }
+  .spin-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(245,200,66,0.45);
+  }
+  .spin-btn:active:not(:disabled) { transform: scale(0.97); }
+  .spin-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    background: #444;
+    box-shadow: none;
+  }
+
+  /* Result Card */
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--gold-dark);
+    border-radius: 20px;
+    padding: 28px 24px;
+    width: 100%;
+    max-width: 480px;
+    margin-bottom: 20px;
+    display: none;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(245,200,66,0.08);
+  }
+  .result-card.show { display: block; animation: popIn 0.3s ease; }
+  @keyframes popIn {
+    0% { transform: scale(0.94); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .result-label {
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .result-name {
+    font-size: 26px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.2;
+  }
+  .session-note {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  @keyframes pulse { from { opacity: 1; } to { opacity: 0.3; } }
+  .spinning { animation: pulse 0.3s infinite alternate; color: var(--gold); }
+
+  /* History */
+  .recent-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px;
+    width: 100%;
+    max-width: 480px;
+    display: none;
+  }
+  .recent-card.show { display: block; }
+  .recent-title {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+  .recent-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .recent-item:last-child { border-bottom: none; }
+  .recent-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--card2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  .bottom-note {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+  }
 </style>
+</head>
+<body>
 
-<div class="container">
-  <h2 class="sr-only">محدد السلوت العشوائي من Stake</h2>
-  <div class="header">
-    <h2><i class="ti ti-dice" aria-hidden="true"></i> سلوت عشوائي</h2>
-    <p id="load-status">جاري التحميل...</p>
-  </div>
-
-  <div class="stats-row" id="stats-row" style="display:none">
-    <div class="stat-card">
-      <div class="stat-label">إجمالي الألعاب</div>
-      <div class="stat-val" id="total-games">0</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">تم عرضها هذه الجلسة</div>
-      <div class="stat-val" id="session-count">0</div>
-    </div>
-  </div>
-
-  <button class="spin-btn" id="spin-btn" disabled>
-    <i class="ti ti-player-play" aria-hidden="true"></i> اختر سلوت عشوائي
-  </button>
-
-  <div class="result-card" id="result-card">
-    <div class="result-label">السلوت المختار</div>
-    <div class="result-name" id="result-name">—</div>
-    <div class="session-note">لن يظهر مجدداً في هذه الجلسة</div>
-  </div>
-
-  <div class="recent-list" id="recent-list" style="display:none">
-    <div class="recent-title"><i class="ti ti-clock" aria-hidden="true"></i> آخر 5 نتائج</div>
-    <div id="recent-items"></div>
-  </div>
-
-  <div class="refresh-note" id="refresh-note"></div>
+<div class="header">
+  <div class="logo">🎰 Stake Casino</div>
+  <h1>سلوت عشوائي</h1>
+  <div class="subtitle" id="load-status">جاري التحميل...</div>
 </div>
+
+<div class="stats-row" id="stats-row" style="display:none">
+  <div class="stat-card">
+    <div class="stat-label">إجمالي الألعاب</div>
+    <div class="stat-val" id="total-games">0</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">هذه الجلسة</div>
+    <div class="stat-val" id="session-count">0</div>
+  </div>
+</div>
+
+<button class="spin-btn" id="spin-btn" disabled>🎲 اختر سلوت عشوائي</button>
+
+<div class="result-card" id="result-card">
+  <div class="result-label">✦ السلوت المختار ✦</div>
+  <div class="result-name" id="result-name">—</div>
+  <div class="session-note">لن يظهر مجدداً في هذه الجلسة</div>
+</div>
+
+<div class="recent-card" id="recent-list">
+  <div class="recent-title">⏱ آخر النتائج</div>
+  <div id="recent-items"></div>
+</div>
+
+<div class="bottom-note" id="refresh-note"></div>
 
 <script>
 const SLOTS_RAW = [
@@ -165,7 +343,7 @@ const SLOTS_RAW = [
 let sessionUsed = new Set();
 let history = [];
 
-function weightedRandom(slots, used) {
+function getRandom(slots, used) {
   const available = slots.filter(s => !used.has(s.name));
   if (available.length === 0) return null;
   return available[Math.floor(Math.random() * available.length)];
@@ -179,48 +357,51 @@ function updateStats() {
   const btn = document.getElementById('spin-btn');
   if (avail === 0) {
     btn.disabled = true;
-    btn.innerHTML = 'تم عرض كل الألعاب في هذه الجلسة!';
+    btn.textContent = '✅ تم عرض كل الألعاب!';
   } else {
     btn.disabled = false;
-    btn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true"></i> اختر سلوت عشوائي';
+    btn.textContent = '🎲 اختر سلوت عشوائي';
   }
 }
 
 function updateHistory() {
-  if (history.length === 0) { document.getElementById('recent-list').style.display = 'none'; return; }
-  document.getElementById('recent-list').style.display = '';
+  const list = document.getElementById('recent-list');
+  if (history.length === 0) { list.classList.remove('show'); return; }
+  list.classList.add('show');
   document.getElementById('recent-items').innerHTML = history.slice(-5).reverse()
-    .map(s => `<div class="recent-item">${s.name}</div>`).join('');
+    .map((s, i) => `<div class="recent-item"><span class="recent-num">${i+1}</span>${s.name}</div>`).join('');
 }
 
 function spin() {
-  document.getElementById('spin-btn').disabled = true;
+  const btn = document.getElementById('spin-btn');
+  btn.disabled = true;
   const card = document.getElementById('result-card');
   const nameEl = document.getElementById('result-name');
   nameEl.className = 'result-name spinning';
+  card.className = 'result-card show';
 
   let flips = 0;
   const interval = setInterval(() => {
     nameEl.textContent = SLOTS_RAW[Math.floor(Math.random() * SLOTS_RAW.length)].name;
     flips++;
-    if (flips >= 12) {
+    if (flips >= 14) {
       clearInterval(interval);
-      const chosen = weightedRandom(SLOTS_RAW, sessionUsed);
+      const chosen = getRandom(SLOTS_RAW, sessionUsed);
       if (!chosen) { updateStats(); return; }
       nameEl.className = 'result-name';
       nameEl.textContent = chosen.name;
       sessionUsed.add(chosen.name);
       history.push(chosen);
-      card.className = 'result-card show';
       updateStats();
       updateHistory();
     }
-  }, 80);
+  }, 75);
 }
 
 document.getElementById('spin-btn').addEventListener('click', spin);
-
 document.getElementById('load-status').textContent = 'آخر تحديث: ' + new Date().toLocaleTimeString('ar');
 document.getElementById('refresh-note').textContent = SLOTS_RAW.length + ' لعبة متاحة';
 updateStats();
 </script>
+</body>
+</html>
