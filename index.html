@@ -17,8 +17,6 @@
     --border: #2a2a2a;
     --text: #f0f0f0;
     --muted: #888;
-    --green: #00c853;
-    --red: #ff4444;
   }
 
   body {
@@ -30,181 +28,109 @@
     flex-direction: column;
     align-items: center;
     padding: 24px 16px 40px;
+    overflow-x: hidden;
   }
 
-  /* Header */
-  .header {
-    text-align: center;
-    margin-bottom: 28px;
-  }
-  .header .logo {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 4px;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-  .header h1 {
-    font-size: 30px;
-    font-weight: 900;
-    color: #fff;
-    line-height: 1.1;
-  }
-  .header .subtitle {
-    font-size: 13px;
-    color: var(--muted);
-    margin-top: 6px;
-  }
+  .header { text-align: center; margin-bottom: 28px; }
+  .header .logo { font-size: 13px; font-weight: 600; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; margin-bottom: 6px; }
+  .header h1 { font-size: 30px; font-weight: 900; color: #fff; line-height: 1.1; }
+  .header .subtitle { font-size: 13px; color: var(--muted); margin-top: 6px; }
 
-  /* Stats */
-  .stats-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    width: 100%;
-    max-width: 480px;
-    margin-bottom: 20px;
-  }
-  .stat-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px 20px;
-    text-align: center;
-  }
-  .stat-label {
-    font-size: 11px;
-    color: var(--muted);
-    margin-bottom: 6px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  .stat-val {
-    font-size: 28px;
-    font-weight: 900;
-    color: var(--gold);
-  }
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 480px; margin-bottom: 20px; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; text-align: center; }
+  .stat-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; letter-spacing: 1px; text-transform: uppercase; }
+  .stat-val { font-size: 28px; font-weight: 900; color: var(--gold); }
 
-  /* Spin Button */
   .spin-btn {
-    display: block;
-    width: 100%;
-    max-width: 480px;
-    padding: 18px;
-    font-family: 'Cairo', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    cursor: pointer;
-    border-radius: 16px;
-    border: none;
+    display: block; width: 100%; max-width: 480px; padding: 18px;
+    font-family: 'Cairo', sans-serif; font-size: 18px; font-weight: 700;
+    cursor: pointer; border-radius: 16px; border: none;
     background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
-    color: #0d0d0d;
-    margin-bottom: 20px;
+    color: #0d0d0d; margin-bottom: 20px;
     transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
     box-shadow: 0 4px 20px rgba(245,200,66,0.3);
+    position: relative; overflow: hidden;
   }
-  .spin-btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(245,200,66,0.45);
-  }
+  .spin-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(245,200,66,0.45); }
   .spin-btn:active:not(:disabled) { transform: scale(0.97); }
-  .spin-btn:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-    background: #444;
-    box-shadow: none;
+  .spin-btn:disabled { opacity: 0.35; cursor: not-allowed; background: #444; box-shadow: none; }
+
+  /* Card shuffle area */
+  .shuffle-area {
+    width: 100%; max-width: 480px; height: 120px;
+    position: relative; margin-bottom: 20px;
+    display: none;
+  }
+  .shuffle-area.active { display: block; }
+
+  .card-item {
+    position: absolute;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid var(--gold-dark);
+    border-radius: 10px;
+    width: 80px; height: 100px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700; color: var(--gold);
+    text-align: center; padding: 6px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    transition: transform 0.15s ease, left 0.2s ease, top 0.2s ease;
+    cursor: default;
+    line-height: 1.3;
+  }
+  .card-item::before {
+    content: '🎰';
+    display: block;
+    font-size: 20px;
+    margin-bottom: 4px;
   }
 
   /* Result Card */
   .result-card {
-    background: var(--card);
-    border: 1px solid var(--gold-dark);
-    border-radius: 20px;
-    padding: 28px 24px;
-    width: 100%;
-    max-width: 480px;
-    margin-bottom: 20px;
-    display: none;
-    text-align: center;
-    box-shadow: 0 0 30px rgba(245,200,66,0.08);
+    background: var(--card); border: 1px solid var(--gold-dark);
+    border-radius: 20px; padding: 28px 24px; width: 100%; max-width: 480px;
+    margin-bottom: 20px; display: none; text-align: center;
+    box-shadow: 0 0 40px rgba(245,200,66,0.15);
   }
-  .result-card.show { display: block; animation: popIn 0.3s ease; }
-  @keyframes popIn {
-    0% { transform: scale(0.94); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
+  .result-card.show { display: block; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  @keyframes popIn { 0% { transform: scale(0.7) rotate(-3deg); opacity: 0; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
+  .result-label { font-size: 11px; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 12px; }
+  .result-name { font-size: 26px; font-weight: 900; color: #fff; line-height: 1.2; }
+  .result-name.reveal { animation: reveal 0.5s ease; }
+  @keyframes reveal {
+    0% { transform: rotateY(90deg); opacity: 0; }
+    100% { transform: rotateY(0deg); opacity: 1; }
   }
-  .result-label {
-    font-size: 11px;
-    color: var(--gold);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-bottom: 12px;
+  .session-note { margin-top: 10px; font-size: 12px; color: var(--muted); }
+
+  /* Particles */
+  .particle {
+    position: fixed; pointer-events: none; z-index: 999;
+    width: 8px; height: 8px; border-radius: 50%;
+    animation: particleFly 1s ease-out forwards;
   }
-  .result-name {
-    font-size: 26px;
-    font-weight: 900;
-    color: #fff;
-    line-height: 1.2;
+  @keyframes particleFly {
+    0% { transform: translate(0,0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
   }
-  .session-note {
-    margin-top: 10px;
-    font-size: 12px;
-    color: var(--muted);
-  }
-  @keyframes pulse { from { opacity: 1; } to { opacity: 0.3; } }
-  .spinning { animation: pulse 0.3s infinite alternate; color: var(--gold); }
 
   /* History */
-  .recent-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 20px;
-    width: 100%;
-    max-width: 480px;
-    display: none;
-  }
+  .recent-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; width: 100%; max-width: 480px; display: none; }
   .recent-card.show { display: block; }
-  .recent-title {
-    font-size: 12px;
-    color: var(--muted);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-    font-weight: 600;
-  }
-  .recent-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 14px;
-    color: var(--text);
-    font-weight: 600;
-  }
+  .recent-title { font-size: 12px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; font-weight: 600; }
+  .recent-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text); font-weight: 600; }
   .recent-item:last-child { border-bottom: none; }
-  .recent-num {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--card2);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    color: var(--muted);
-    flex-shrink: 0;
-  }
+  .recent-num { width: 24px; height: 24px; border-radius: 50%; background: var(--card2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--muted); flex-shrink: 0; }
 
-  .bottom-note {
-    margin-top: 16px;
-    font-size: 12px;
-    color: var(--muted);
-    text-align: center;
+  .bottom-note { margin-top: 16px; font-size: 12px; color: var(--muted); text-align: center; }
+
+  @keyframes cardFlip {
+    0% { transform: rotateY(0deg) translateY(0px); }
+    25% { transform: rotateY(90deg) translateY(-20px); }
+    50% { transform: rotateY(180deg) translateY(0px); }
+    75% { transform: rotateY(270deg) translateY(-10px); }
+    100% { transform: rotateY(360deg) translateY(0px); }
   }
+  .flipping { animation: cardFlip 0.4s ease infinite; }
 </style>
 </head>
 <body>
@@ -226,7 +152,11 @@
   </div>
 </div>
 
+<a href="multiplier.html" style="display:block;width:100%;max-width:480px;padding:14px;font-family:Cairo,sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:14px;border:1px solid #2a2a2a;background:#161616;color:#f5c842;margin-bottom:12px;text-align:center;text-decoration:none;">🚀 اختيار الاكس العشوائي</a>
 <button class="spin-btn" id="spin-btn" disabled>🎲 اختر سلوت عشوائي</button>
+
+<!-- Card shuffle visual -->
+<div class="shuffle-area" id="shuffle-area"></div>
 
 <div class="result-card" id="result-card">
   <div class="result-label">✦ السلوت المختار ✦</div>
@@ -268,8 +198,7 @@ const SLOTS_RAW = [
   {name:"Knucklehead Brothers"}, {name:"Magician Wilds"}, {name:"Phoenix 1000"},
   {name:"Blackjack 100"}, {name:"Boom!"}, {name:"Cat Burglar"},
   {name:"Drac's Stacks"}, {name:"Pudding Bonanza"}, {name:"Sugar Twist"},
-  {name:"Yeti Link"}, {name:"Ancient Mystery"}, {name:"Dice 100000"},
-  {name:"Farm Up"}, {name:"Wanted Hunted"}, {name:"Ctrl Alt Delete"},
+  {name:"Yeti Link"}, {name:"Ancient Mystery"}, {name:"Farm Up"}, {name:"Wanted Hunted"}, {name:"Ctrl Alt Delete"},
   {name:"Eternal Outlaw"}, {name:"The Frontier"}, {name:"Thunder vs Underworld"},
   {name:"Bank Blast"}, {name:"Fat Fruits"}, {name:"Gates of Eddie Super Button"},
   {name:"Knight Fall"}, {name:"Da Hacker"}, {name:"Solar Girl"},
@@ -302,7 +231,7 @@ const SLOTS_RAW = [
   {name:"Disco Candy"}, {name:"Farmageddon"}, {name:"Festive Frost"},
   {name:"Dead Code Glitch Gain"}, {name:"Knight Shift"}, {name:"Magic Stacks"},
   {name:"Marry Me"}, {name:"Mystery Circus"}, {name:"Pixel Castle"},
-  {name:"Candy Pantry"}, {name:"Plinko Xtreme"}, {name:"Starlight Fever"},
+  {name:"Candy Pantry"}, {name:"Starlight Fever"},
   {name:"WWW"}, {name:"Super Wild Cat"}, {name:"Wild Don Donkey"},
   {name:"Yokai"}, {name:"Zoo Safari"}, {name:"Boom Town"},
   {name:"Cupidon in Paris"}, {name:"Dragon Duel"}, {name:"Click Cloning Factory"},
@@ -335,14 +264,131 @@ const SLOTS_RAW = [
   {name:"Candy Clash"}, {name:"Castle Cluster"}, {name:"Chocolate 98"},
   {name:"Crazy Spin"}, {name:"Crowd Rush"}, {name:"Crown Quest"},
   {name:"Cyber Ronin"}, {name:"Deep Ocean Treasures"}, {name:"Desert Veil"},
-  {name:"Dice Duel"}, {name:"Donut Pop"}, {name:"Dragon 1000"},
+  {name:"Donut Pop"}, {name:"Dragon 1000"},
   {name:"Drago's Kingdom"}, {name:"Dungeon Run"}, {name:"Dust Devil"},
-  {name:"Eddies Vaults"}, {name:"Experiment X"}, {name:"5 Little Pigs"}
+  {name:"Eddies Vaults"}, {name:"Experiment X"}, {name:"5 Little Pigs"},
+  {name:"Sketchbook Possession"}, {name:"Crash Pool"}, {name:"Briar Witch"},
+  {name:"Hog Harvest"}, {name:"Queen of Desire"},
+  {name:"Arctic Tower"}, {name:"Cherry on Top"}, {name:"God of Dead"},
+  {name:"Cats vs Dogs"}, {name:"Eye of Osiris"}, {name:"Pack Mayhem"},
+  {name:"Katana Gold"}, {name:"Golden Shoes Showdown"}, {name:"Candy Royal"},
+  {name:"Tropical Market"}, {name:"Trident Fortune"}, {name:"Sticky Dudes"}
 ];
 
 let sessionUsed = new Set();
 let history = [];
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
+// ---- Sound functions ----
+function playCardFlip() {
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.connect(g); g.connect(ctx.destination);
+  o.type = 'triangle';
+  o.frequency.setValueAtTime(800, ctx.currentTime);
+  o.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.08);
+  g.gain.setValueAtTime(0.15, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+  o.start(ctx.currentTime);
+  o.stop(ctx.currentTime + 0.08);
+}
+
+function playWhoosh() {
+  const bufSize = ctx.sampleRate * 0.3;
+  const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufSize);
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(2000, ctx.currentTime);
+  filter.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.3);
+  filter.Q.value = 1.5;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0.4, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+  src.connect(filter); filter.connect(g); g.connect(ctx.destination);
+  src.start(); src.stop(ctx.currentTime + 0.3);
+}
+
+function playWin() {
+  const notes = [523, 659, 784, 1047];
+  notes.forEach((freq, i) => {
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = 'sine';
+    const t = ctx.currentTime + i * 0.12;
+    o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.3, t + 0.05);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+    o.start(t);
+    o.stop(t + 0.35);
+  });
+}
+
+// ---- Card shuffle visuals ----
+function spawnCards(names) {
+  const area = document.getElementById('shuffle-area');
+  area.innerHTML = '';
+  area.classList.add('active');
+  const count = Math.min(6, names.length);
+  const areaW = Math.min(480, window.innerWidth - 32);
+
+  for (let i = 0; i < count; i++) {
+    const card = document.createElement('div');
+    card.className = 'card-item flipping';
+    card.textContent = names[i].name;
+    card.style.left = (i * (areaW / count)) + 'px';
+    card.style.top = Math.random() * 20 + 'px';
+    card.style.animationDelay = (i * 0.07) + 's';
+    card.style.zIndex = i;
+    area.appendChild(card);
+  }
+}
+
+function shuffleCards() {
+  const area = document.getElementById('shuffle-area');
+  const cards = area.querySelectorAll('.card-item');
+  const areaW = Math.min(480, window.innerWidth - 32);
+  cards.forEach((card) => {
+    const newLeft = Math.random() * (areaW - 80);
+    const newTop = Math.random() * 20;
+    card.style.left = newLeft + 'px';
+    card.style.top = newTop + 'px';
+  });
+}
+
+function hideCards() {
+  const area = document.getElementById('shuffle-area');
+  const cards = area.querySelectorAll('.card-item');
+  cards.forEach((card, i) => {
+    setTimeout(() => {
+      card.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+      card.style.transform = 'translateY(-150px) rotate(' + (Math.random()*40-20) + 'deg)';
+      card.style.opacity = '0';
+    }, i * 50);
+  });
+  setTimeout(() => { area.classList.remove('active'); area.innerHTML = ''; }, 600);
+}
+
+// ---- Particles ----
+function spawnParticles(x, y) {
+  const colors = ['#f5c842','#fff','#ff6b6b','#4ecdc4','#a8e063'];
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 80 + Math.random() * 120;
+    p.style.cssText = `left:${x}px;top:${y}px;background:${colors[Math.floor(Math.random()*colors.length)]};--dx:${Math.cos(angle)*dist}px;--dy:${Math.sin(angle)*dist}px;`;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 1000);
+  }
+}
+
+// ---- Core ----
 function getRandom(slots, used) {
   const available = slots.filter(s => !used.has(s.name));
   if (available.length === 0) return null;
@@ -373,29 +419,48 @@ function updateHistory() {
 }
 
 function spin() {
+  if (ctx.state === 'suspended') ctx.resume();
   const btn = document.getElementById('spin-btn');
   btn.disabled = true;
-  const card = document.getElementById('result-card');
-  const nameEl = document.getElementById('result-name');
-  nameEl.className = 'result-name spinning';
-  card.className = 'result-card show';
+  document.getElementById('result-card').classList.remove('show');
+
+  // pick random subset for card visuals
+  const shuffled = [...SLOTS_RAW].sort(() => Math.random() - 0.5).slice(0, 6);
+  spawnCards(shuffled);
+  playWhoosh();
 
   let flips = 0;
+  const totalFlips = 16;
+
   const interval = setInterval(() => {
-    nameEl.textContent = SLOTS_RAW[Math.floor(Math.random() * SLOTS_RAW.length)].name;
     flips++;
-    if (flips >= 14) {
+    if (flips % 3 === 0) { shuffleCards(); playCardFlip(); }
+
+    if (flips >= totalFlips) {
       clearInterval(interval);
       const chosen = getRandom(SLOTS_RAW, sessionUsed);
-      if (!chosen) { updateStats(); return; }
-      nameEl.className = 'result-name';
-      nameEl.textContent = chosen.name;
-      sessionUsed.add(chosen.name);
-      history.push(chosen);
-      updateStats();
-      updateHistory();
+      if (!chosen) { hideCards(); updateStats(); return; }
+
+      hideCards();
+
+      setTimeout(() => {
+        const nameEl = document.getElementById('result-name');
+        nameEl.textContent = chosen.name;
+        nameEl.className = 'result-name reveal';
+        document.getElementById('result-card').classList.add('show');
+
+        // win sound + particles
+        playWin();
+        const rect = document.getElementById('result-card').getBoundingClientRect();
+        spawnParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+        sessionUsed.add(chosen.name);
+        history.push(chosen);
+        updateStats();
+        updateHistory();
+      }, 400);
     }
-  }, 75);
+  }, 120);
 }
 
 document.getElementById('spin-btn').addEventListener('click', spin);
