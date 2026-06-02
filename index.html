@@ -1,0 +1,226 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.container { padding: 1.5rem 1rem; max-width: 680px; font-family: var(--font-sans); }
+.header { text-align: center; margin-bottom: 1.5rem; }
+.header h2 { font-size: 20px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.header p { font-size: 13px; color: var(--color-text-secondary); }
+.stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
+.stat-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px; }
+.stat-label { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 2px; }
+.stat-val { font-size: 17px; font-weight: 500; color: var(--color-text-primary); }
+.spin-btn { display: block; width: 100%; padding: 14px; font-size: 17px; font-weight: 500; cursor: pointer; border-radius: var(--border-radius-lg); border: 2px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); transition: background 0.15s, transform 0.1s; margin-bottom: 1.5rem; }
+.spin-btn:hover { background: var(--color-background-secondary); }
+.spin-btn:active { transform: scale(0.98); }
+.spin-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.result-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.5rem 1.25rem; margin-bottom: 1rem; display: none; text-align: center; }
+.result-card.show { display: block; }
+.result-label { font-size: 12px; color: var(--color-text-tertiary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+.result-name { font-size: 28px; font-weight: 500; color: var(--color-text-primary); }
+.session-note { margin-top: 10px; font-size: 12px; color: var(--color-text-tertiary); }
+.recent-list { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+.recent-title { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 10px; font-weight: 500; }
+.recent-item { padding: 7px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 13px; color: var(--color-text-primary); }
+.recent-item:last-child { border-bottom: none; }
+.refresh-note { text-align: center; font-size: 11px; color: var(--color-text-tertiary); margin-top: 1rem; }
+.spinning { animation: pulse 0.4s infinite alternate; }
+@keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } }
+</style>
+
+<div class="container">
+  <h2 class="sr-only">محدد السلوت العشوائي من Stake</h2>
+  <div class="header">
+    <h2><i class="ti ti-dice" aria-hidden="true"></i> سلوت عشوائي</h2>
+    <p id="load-status">جاري التحميل...</p>
+  </div>
+
+  <div class="stats-row" id="stats-row" style="display:none">
+    <div class="stat-card">
+      <div class="stat-label">إجمالي الألعاب</div>
+      <div class="stat-val" id="total-games">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">تم عرضها هذه الجلسة</div>
+      <div class="stat-val" id="session-count">0</div>
+    </div>
+  </div>
+
+  <button class="spin-btn" id="spin-btn" disabled>
+    <i class="ti ti-player-play" aria-hidden="true"></i> اختر سلوت عشوائي
+  </button>
+
+  <div class="result-card" id="result-card">
+    <div class="result-label">السلوت المختار</div>
+    <div class="result-name" id="result-name">—</div>
+    <div class="session-note">لن يظهر مجدداً في هذه الجلسة</div>
+  </div>
+
+  <div class="recent-list" id="recent-list" style="display:none">
+    <div class="recent-title"><i class="ti ti-clock" aria-hidden="true"></i> آخر 5 نتائج</div>
+    <div id="recent-items"></div>
+  </div>
+
+  <div class="refresh-note" id="refresh-note"></div>
+</div>
+
+<script>
+const SLOTS_RAW = [
+  {name:"Le Hooligan"}, {name:"Five Horsemen"}, {name:"Big Bass Rock and Roll"},
+  {name:"Fist of Demolition"}, {name:"Le Catcher"}, {name:"Gates of Heaven 1000"},
+  {name:"Waylanders Forge"}, {name:"Big Duck Bonanza"}, {name:"Voodoo Bayou"},
+  {name:"Angel of Asgard"}, {name:"Puffer Stacks 3"}, {name:"Egyptian Coins"},
+  {name:"Hel's Domain"}, {name:"Drop the Neta"}, {name:"Midas 1000"},
+  {name:"Wanted Salvation"}, {name:"Dragonspire Frostfall"}, {name:"Lucky Phoenix Megaways"},
+  {name:"Mother Clucker"}, {name:"Puppet Master"}, {name:"Sweet Fiesta"},
+  {name:"Dragon Doubles"}, {name:"Gym Rat"}, {name:"Tavern Drop"},
+  {name:"Professor Lightning"}, {name:"Big Bass Boom"}, {name:"Mine Drop"},
+  {name:"Sweet Fiesta 1000"}, {name:"Dragonspire"}, {name:"Rack City Riches"},
+  {name:"Gold Portals"}, {name:"Bank Basher"}, {name:"Elemental Ways"},
+  {name:"Tome of Hades"}, {name:"Le Rapper"}, {name:"Dog Mansion Megaways"},
+  {name:"Angel vs Sinner Eternal Battle"}, {name:"The Haunted Circus"},
+  {name:"Gummy Drop 1000"}, {name:"Bounty Rush"}, {name:"Gates of Heaven"},
+  {name:"Ghost Blade"}, {name:"Fortune Encore"}, {name:"Wizard 2000"},
+  {name:"Transylvania Mania"}, {name:"Drop the Boss"}, {name:"Flaming Mummy"},
+  {name:"Harakiri"}, {name:"Tiki Time Extreme"}, {name:"Wild Storm"},
+  {name:"Jewel Bonanza"}, {name:"Coins of the Sea"}, {name:"Miko"},
+  {name:"Big Bass and the Gold Ness Monster"}, {name:"Honey Money"},
+  {name:"Blood Moon Bounty"}, {name:"Angry Balls"}, {name:"Chicken Delivery"},
+  {name:"Duck Cult"}, {name:"Rooster's Reloaded"}, {name:"Da Goat"},
+  {name:"Axe Fight 98"}, {name:"Bison Spirit"}, {name:"Cut n Crash"},
+  {name:"Knucklehead Brothers"}, {name:"Magician Wilds"}, {name:"Phoenix 1000"},
+  {name:"Blackjack 100"}, {name:"Boom!"}, {name:"Cat Burglar"},
+  {name:"Drac's Stacks"}, {name:"Pudding Bonanza"}, {name:"Sugar Twist"},
+  {name:"Yeti Link"}, {name:"Ancient Mystery"}, {name:"Dice 100000"},
+  {name:"Farm Up"}, {name:"Wanted Hunted"}, {name:"Ctrl Alt Delete"},
+  {name:"Eternal Outlaw"}, {name:"The Frontier"}, {name:"Thunder vs Underworld"},
+  {name:"Bank Blast"}, {name:"Fat Fruits"}, {name:"Gates of Eddie Super Button"},
+  {name:"Knight Fall"}, {name:"Da Hacker"}, {name:"Solar Girl"},
+  {name:"Sour Shock"}, {name:"Bottlecap Blitz"}, {name:"Clash of Titans"},
+  {name:"Dog House 100 Dog Left Behind"}, {name:"Lokis Vault"},
+  {name:"Mouse Ananza"}, {name:"Castle of Ymir"}, {name:"Darts 100000"},
+  {name:"Dont Hesi"}, {name:"Candy Blitz Boom"}, {name:"Deep Key Dive"},
+  {name:"Bonsai Banzai"}, {name:"Gift Bonanza"}, {name:"Arctic Mysteries"},
+  {name:"Bone and Bullets"}, {name:"Candy Dream"}, {name:"Groove Guardians"},
+  {name:"Lazy Knight"}, {name:"Merlin's Megaways"}, {name:"Pigeon Mail"},
+  {name:"Red Robin"}, {name:"Toilet Rolls"}, {name:"Carnival Wheel"},
+  {name:"Sword Drop"}, {name:"Zeus Goes Bananas Hold n Win"},
+  {name:"Lab Leak"}, {name:"Magic Phoenix"}, {name:"Potions"},
+  {name:"Rooster Returns"}, {name:"Sugar Gates"}, {name:"Toon Pilot"},
+  {name:"Viking Drop"}, {name:"Wizard 1000"}, {name:"Dragon's Hoard"},
+  {name:"Jokers & Diamonds"}, {name:"Neon Debut"}, {name:"Valhalla 1000"},
+  {name:"Wheel of Wonders"}, {name:"Wild Voltage"}, {name:"Cult of Cash Winsafe"},
+  {name:"Eggventure"}, {name:"Gambit"}, {name:"Lazy Pirate"},
+  {name:"Puffer Stacks 2"}, {name:"Rooster's Revenge"}, {name:"Round Robin"},
+  {name:"The Big Bank"}, {name:"The Deep"}, {name:"Wild West Bounty"},
+  {name:"Wild West Express"}, {name:"Gods 10000"}, {name:"Afternoon Nap"},
+  {name:"Airstrike 2"}, {name:"Battle of Gods"}, {name:"Chaos Knight"},
+  {name:"Crazy Chef"}, {name:"Dream Princess"}, {name:"El Vikings"},
+  {name:"Gates of Gladius"}, {name:"Hex Appeal"}, {name:"Orbs of Magic"},
+  {name:"Pixel Quest"}, {name:"Solar Eclipse"}, {name:"Wings of Valhalla"},
+  {name:"Witches Cauldron"}, {name:"Wizard Boom"}, {name:"Xmas Link"},
+  {name:"Deadly Outlaw"}, {name:"Frenzy"}, {name:"Gates of Athena"},
+  {name:"Lucky Man's Chamber"}, {name:"Motorways"}, {name:"Puffer at Dawn"},
+  {name:"Ritual"}, {name:"Tipsy Yeti Megaways"}, {name:"Trickster"},
+  {name:"Disco Candy"}, {name:"Farmageddon"}, {name:"Festive Frost"},
+  {name:"Dead Code Glitch Gain"}, {name:"Knight Shift"}, {name:"Magic Stacks"},
+  {name:"Marry Me"}, {name:"Mystery Circus"}, {name:"Pixel Castle"},
+  {name:"Candy Pantry"}, {name:"Plinko Xtreme"}, {name:"Starlight Fever"},
+  {name:"WWW"}, {name:"Super Wild Cat"}, {name:"Wild Don Donkey"},
+  {name:"Yokai"}, {name:"Zoo Safari"}, {name:"Boom Town"},
+  {name:"Cupidon in Paris"}, {name:"Dragon Duel"}, {name:"Click Cloning Factory"},
+  {name:"Fireball"}, {name:"Forged in Fire"}, {name:"Forged in Plasma"},
+  {name:"Fruit Market"}, {name:"God Mode Throne of Zeus"}, {name:"Ham Busters"},
+  {name:"Hen's Night"}, {name:"Lazy Viking"}, {name:"Legend of the Pantheon"},
+  {name:"Link Quest"}, {name:"Mines Pro"}, {name:"Mooning"},
+  {name:"Pixel Farm"}, {name:"Puffer Stacks"}, {name:"Roman Bonanza"},
+  {name:"Space Party 1024"}, {name:"Spark Fortune"},
+  {name:"The Ring Master's Whopping Wins"}, {name:"This is Fine"},
+  {name:"Three Dragons"}, {name:"Viking 1000"}, {name:"Wild Goose Chase"},
+  {name:"Wild Ruin"}, {name:"Wizard Shop"}, {name:"Zeus God of Thunder"},
+  {name:"Akimbo Outlaw"}, {name:"Aztec Bounty"}, {name:"Biker Bucks"},
+  {name:"Block Puzzle Mania"}, {name:"Cash Stacks"}, {name:"Chameleon Bonaparte"},
+  {name:"Farm & Merge"}, {name:"Football 2026"},
+  {name:"Dr Funkenstein and His Monsters"}, {name:"Gold Mine Monsters"},
+  {name:"Honey Dragon"}, {name:"Hot College"}, {name:"Huff & Puff"},
+  {name:"King's Tribute"}, {name:"Last Legend"}, {name:"Massive X"},
+  {name:"Mr Cheesy"}, {name:"Multi Vision"}, {name:"Mutagenesis Mayhem"},
+  {name:"Ninja Rabbit"}, {name:"Penguins Can Fly"}, {name:"Pirate's Boom"},
+  {name:"Roulette 100000"}, {name:"Sakura Samurai"}, {name:"Samurai Dogs"},
+  {name:"Space Knight Merge Up"}, {name:"Supersize"}, {name:"Switchcraft"},
+  {name:"Sword Fight"}, {name:"System Infiltration"}, {name:"The Big Top"},
+  {name:"The Family Death"}, {name:"Truck Mania"}, {name:"Wild Frontier"},
+  {name:"Wildwood Fortune"}, {name:"Witchy Wilds"}, {name:"Wobble Royale"},
+  {name:"Airstrike"}, {name:"Baking Jackpots"}, {name:"Balance"},
+  {name:"Big Boom"}, {name:"Big Lunker Bass Clusters"}, {name:"Bird Duels"},
+  {name:"Blackhole"}, {name:"Blackjack Lite"}, {name:"Blackout Deluxe"},
+  {name:"Bling King Camel"}, {name:"Bluebeard's Treasure"}, {name:"Box Bonanza"},
+  {name:"Candy Clash"}, {name:"Castle Cluster"}, {name:"Chocolate 98"},
+  {name:"Crazy Spin"}, {name:"Crowd Rush"}, {name:"Crown Quest"},
+  {name:"Cyber Ronin"}, {name:"Deep Ocean Treasures"}, {name:"Desert Veil"},
+  {name:"Dice Duel"}, {name:"Donut Pop"}, {name:"Dragon 1000"},
+  {name:"Drago's Kingdom"}, {name:"Dungeon Run"}, {name:"Dust Devil"},
+  {name:"Eddies Vaults"}, {name:"Experiment X"}, {name:"5 Little Pigs"}
+];
+
+let sessionUsed = new Set();
+let history = [];
+
+function weightedRandom(slots, used) {
+  const available = slots.filter(s => !used.has(s.name));
+  if (available.length === 0) return null;
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+function updateStats() {
+  document.getElementById('total-games').textContent = SLOTS_RAW.length;
+  document.getElementById('session-count').textContent = sessionUsed.size;
+  document.getElementById('stats-row').style.display = '';
+  const avail = SLOTS_RAW.filter(s => !sessionUsed.has(s.name)).length;
+  const btn = document.getElementById('spin-btn');
+  if (avail === 0) {
+    btn.disabled = true;
+    btn.innerHTML = 'تم عرض كل الألعاب في هذه الجلسة!';
+  } else {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true"></i> اختر سلوت عشوائي';
+  }
+}
+
+function updateHistory() {
+  if (history.length === 0) { document.getElementById('recent-list').style.display = 'none'; return; }
+  document.getElementById('recent-list').style.display = '';
+  document.getElementById('recent-items').innerHTML = history.slice(-5).reverse()
+    .map(s => `<div class="recent-item">${s.name}</div>`).join('');
+}
+
+function spin() {
+  document.getElementById('spin-btn').disabled = true;
+  const card = document.getElementById('result-card');
+  const nameEl = document.getElementById('result-name');
+  nameEl.className = 'result-name spinning';
+
+  let flips = 0;
+  const interval = setInterval(() => {
+    nameEl.textContent = SLOTS_RAW[Math.floor(Math.random() * SLOTS_RAW.length)].name;
+    flips++;
+    if (flips >= 12) {
+      clearInterval(interval);
+      const chosen = weightedRandom(SLOTS_RAW, sessionUsed);
+      if (!chosen) { updateStats(); return; }
+      nameEl.className = 'result-name';
+      nameEl.textContent = chosen.name;
+      sessionUsed.add(chosen.name);
+      history.push(chosen);
+      card.className = 'result-card show';
+      updateStats();
+      updateHistory();
+    }
+  }, 80);
+}
+
+document.getElementById('spin-btn').addEventListener('click', spin);
+
+document.getElementById('load-status').textContent = 'آخر تحديث: ' + new Date().toLocaleTimeString('ar');
+document.getElementById('refresh-note').textContent = SLOTS_RAW.length + ' لعبة متاحة';
+updateStats();
+</script>
