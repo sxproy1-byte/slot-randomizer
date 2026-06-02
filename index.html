@@ -55,6 +55,16 @@
   .spin-btn:active:not(:disabled) { transform: scale(0.97); }
   .spin-btn:disabled { opacity: 0.35; cursor: not-allowed; background: #444; box-shadow: none; }
 
+  .reset-btn {
+    display: none; width: 100%; max-width: 480px; padding: 14px;
+    font-family: 'Cairo', sans-serif; font-size: 15px; font-weight: 700;
+    cursor: pointer; border-radius: 14px; border: 1px solid #3a3a3a;
+    background: #1e1e1e; color: #f0f0f0; margin-bottom: 12px;
+    transition: transform 0.15s, background 0.2s, border-color 0.2s;
+  }
+  .reset-btn:hover { background: #2a2a2a; border-color: var(--gold-dark); color: var(--gold); transform: translateY(-1px); }
+  .reset-btn.show { display: block; }
+
   /* Card shuffle area */
   .shuffle-area {
     width: 100%; max-width: 480px; height: 120px;
@@ -153,7 +163,9 @@
 </div>
 
 <a href="multiplier.html" style="display:block;width:100%;max-width:480px;padding:14px;font-family:Cairo,sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:14px;border:1px solid #2a2a2a;background:#161616;color:#f5c842;margin-bottom:12px;text-align:center;text-decoration:none;">🚀 اختيار الاكس العشوائي</a>
+<a href="wheel.html" style="display:block;width:100%;max-width:480px;padding:14px;font-family:Cairo,sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:14px;border:1px solid #2a2a2a;background:#161616;color:#f5c842;margin-bottom:12px;text-align:center;text-decoration:none;">🎡 دولاب الحظ</a>
 <button class="spin-btn" id="spin-btn" disabled>🎲 اختر سلوت عشوائي</button>
+<button class="reset-btn" id="reset-btn">🔄 ريست كل السلوتات</button>
 
 <!-- Card shuffle visual -->
 <div class="shuffle-area" id="shuffle-area"></div>
@@ -1893,12 +1905,18 @@ function updateStats() {
   document.getElementById('stats-row').style.display = '';
   const avail = SLOTS_RAW.filter(s => !sessionUsed.has(s.name)).length;
   const btn = document.getElementById('spin-btn');
+  const resetBtn = document.getElementById('reset-btn');
   if (avail === 0) {
     btn.disabled = true;
     btn.textContent = '✅ تم عرض كل الألعاب!';
   } else {
     btn.disabled = false;
     btn.textContent = '🎲 اختر سلوت عشوائي';
+  }
+  if (sessionUsed.size > 0) {
+    resetBtn.classList.add('show');
+  } else {
+    resetBtn.classList.remove('show');
   }
 }
 
@@ -1956,6 +1974,14 @@ function spin() {
 }
 
 document.getElementById('spin-btn').addEventListener('click', spin);
+document.getElementById('reset-btn').addEventListener('click', () => {
+  sessionUsed.clear();
+  history.length = 0;
+  document.getElementById('result-card').classList.remove('show');
+  document.getElementById('recent-list').classList.remove('show');
+  document.getElementById('recent-items').innerHTML = '';
+  updateStats();
+});
 document.getElementById('load-status').textContent = 'آخر تحديث: ' + new Date().toLocaleTimeString('ar');
 document.getElementById('refresh-note').textContent = SLOTS_RAW.length + ' لعبة متاحة';
 updateStats();
